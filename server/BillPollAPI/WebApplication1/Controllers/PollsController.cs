@@ -17,7 +17,9 @@ namespace WebApplication1.Controllers
         [HttpGet(Name = "GetAllPolls")]
         public IEnumerable<Poll> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new Poll(index.ToString(), "Poll", null)).ToArray();
+            Option[] options = { new Option("1", "Option 1", 1), new Option("1", "Option 2", 1) };
+            Poll[] polls = { new Poll("1", "Test Poll", options) };
+            return polls;   
         }
     }
 }
