@@ -4,7 +4,7 @@
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public Option[] Options { get; set; }
+        public ICollection<Option> Options { get; set; } = new List<Option>();
 
         public Poll(string id, string name, Option[] options)
         {
@@ -12,5 +12,7 @@
             Name = name;
             Options = options;
         }
+
+        public Poll() { }
     }
 }

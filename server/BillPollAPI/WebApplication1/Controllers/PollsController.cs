@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using WebApplication1.API;
 
 namespace WebApplication1.Controllers
 {
@@ -8,18 +10,27 @@ namespace WebApplication1.Controllers
     public class PollsController : ControllerBase
     {
         private readonly ILogger<PollsController> _logger;
+        private readonly PollContext _context; // Inject your DbContext here
 
-        public PollsController(ILogger<PollsController> logger)
+        public PollsController(ILogger<PollsController> logger, PollContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet(Name = "GetAllPolls")]
-        public IEnumerable<Poll> Get()
+        public IEnumerable<API.Poll> Get()
         {
-            Option[] options = { new Option("1", "Option 1", 1), new Option("1", "Option 2", 1) };
-            Poll[] polls = { new Poll("1", "Test Poll", options) };
-            return polls;   
+            var models = _context.Polls
+                .Include(poll => poll.Options) // Eager loading of options
+                .OrderBy(poll => poll.Id);
+
+            var polls = new List<API.Poll>();
+            foreach (var model in models)
+            {
+                polls.Add(new API.Poll(model));
+            }
+            return polls;
         }
     }
 }

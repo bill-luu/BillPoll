@@ -3,7 +3,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using WebApplication1.Controllers;
-using WebApplication1.Models;
+using WebApplication1.API;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1;
 
 namespace PollTest
 {
@@ -12,18 +14,28 @@ namespace PollTest
     {
         private Mock<ILogger<PollsController>>? _loggerMock;
         private PollsController? _controller;
+        private PollContext? _context;
 
         [TestInitialize]
         public void TestInitialize()
         {
+
             _loggerMock = new Mock<ILogger<PollsController>>();
-            _controller = new PollsController(_loggerMock.Object);
+            _context = new PollContext();
+            _context.DbPath =  Path.GetFullPath("../../../testdata/poll.db");
+            _controller = new PollsController(_loggerMock.Object, _context);
         }
         [TestMethod]
         public void Test_GetAllPolls()
         {
             var result = _controller.Get();
-            Option[] options = { new Option("1", "Option 1", 1), new Option("1", "Option 2", 1) };
+
+            Option[] options = {
+                new Option { ID = "1", Name = "Option 1", Votes = 1 },
+                new Option { ID = "2", Name = "Option 2", Votes = 1 }
+            };
+
+
             Poll[] expected = { new Poll("1", "Test Poll", options) };
 
             var resultJson = JsonConvert.SerializeObject(result);

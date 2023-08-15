@@ -20,5 +20,10 @@
   <ItemGroup>
     <ProjectReference Include="..\WebApplication1\WebApplication1.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Content Include="testdata\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
