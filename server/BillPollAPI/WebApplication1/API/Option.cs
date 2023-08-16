@@ -1,6 +1,4 @@
-﻿using WebApplication1.Models;
-
-namespace WebApplication1.API
+﻿namespace WebApplication1.API
 {
     public class Option
     {

@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Models;
-using WebApplication1.API;
-
 namespace WebApplication1.Controllers
 {
     [ApiController]
@@ -31,6 +28,15 @@ namespace WebApplication1.Controllers
                 polls.Add(new API.Poll(model));
             }
             return polls;
+        }
+
+        [HttpPost(Name = "Create New Poll")]
+        public async Task<ActionResult<API.Poll>> CreatePoll(Models.Poll poll)
+        {
+            _context.Add(poll);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(CreatePoll), new { id = poll.Id }, new API.Poll(poll));
         }
     }
 }

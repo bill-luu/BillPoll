@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System.Xml.Linq;
-using WebApplication1.Models;
-
-namespace WebApplication1.API
+﻿namespace WebApplication1.API
 {
     public class Poll
     {
@@ -27,8 +23,6 @@ namespace WebApplication1.API
             Name = name;
             Options = options;
         }
-
-        public Poll() { }
     }
 
 }
