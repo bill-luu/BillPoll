@@ -23,6 +23,7 @@
             Name = name;
             Options = options;
         }
+        public Poll() { }
     }
 
 }

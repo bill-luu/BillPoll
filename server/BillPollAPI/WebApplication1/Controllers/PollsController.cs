@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("poll/")]
     public class PollsController : ControllerBase
     {
         private readonly ILogger<PollsController> _logger;
@@ -16,7 +16,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet(Name = "GetAllPolls")]
-        public IEnumerable<API.Poll> Get()
+        public ActionResult<IEnumerable<API.Poll>> Get()
         {
             var models = _context.Polls
                 .Include(poll => poll.Options) // Eager loading of options
@@ -27,16 +27,44 @@ namespace WebApplication1.Controllers
             {
                 polls.Add(new API.Poll(model));
             }
-            return polls;
+
+            return Ok(polls);
+        }
+
+        [HttpGet("{pollId}")]
+        public ActionResult<IEnumerable<API.Poll>> Get(string pollId)
+        {
+            var poll = _context.Polls.FirstOrDefault(p => p.Id == pollId);
+            if (poll == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new API.Poll(poll));
+        }
+
+        [HttpDelete("{pollId}")]
+        public async Task <ActionResult<API.Poll>> Delete(string pollId)
+        {
+            var poll = _context.Polls.FirstOrDefault(p => p.Id == pollId);
+            if (poll == null)
+            {
+                return NotFound();
+            }
+
+            _context.Polls.Remove(poll);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpPost(Name = "Create New Poll")]
-        public async Task<ActionResult<API.Poll>> CreatePoll(Models.Poll poll)
+        public async Task<ActionResult<API.Poll>> CreatePoll(API.Poll poll)
         {
-            _context.Add(poll);
+            Models.Poll polltoCreate = new Models.Poll(poll);
+            _context.Add(polltoCreate);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(CreatePoll), new { id = poll.Id }, new API.Poll(poll));
+            return CreatedAtAction(nameof(CreatePoll), new { id = poll.Id }, poll);
         }
     }
 }

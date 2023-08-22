@@ -13,6 +13,16 @@
             Options = options;
         }
 
+        public Poll(API.Poll pollDTO)
+        {
+            Id = pollDTO.Id;
+            Name = pollDTO.Name;
+            Options = new List<Option>();
+            foreach (API.Option option in pollDTO.Options) {
+                Options.Add(new Option(option, Id));
+            }
+        }
+
         public Poll() { }
     }
 }
