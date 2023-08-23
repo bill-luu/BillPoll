@@ -17,6 +17,11 @@ namespace PollTest
         private PollsController? _controller;
         private PollContext? _context;
 
+        private void AssertStatusCode(int expected, IActionResult? actionResult)
+        {
+            Assert.AreEqual(expected, (actionResult as IStatusCodeActionResult)?.StatusCode);
+        }
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -35,10 +40,8 @@ namespace PollTest
         [TestMethod]
         public void Test_GetAllPolls()
         {
-            if (_context == null)
-            {
-                Assert.Fail("Database context null");
-            }
+            Assert.IsNotNull(_context);
+            Assert.IsNotNull(_controller);
 
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
@@ -51,8 +54,8 @@ namespace PollTest
             _context.Add(existingPoll);
             _context.SaveChanges();
 
-
-            ActionResult<IEnumerable<WebApplication1.API.Poll>> result = _controller.Get();
+            // Act
+            var result = _controller.Get().Result as ObjectResult;
 
             WebApplication1.API.Poll[] expected = { new WebApplication1.API.Poll(
                 "1",
@@ -63,12 +66,10 @@ namespace PollTest
                 })
             };
 
-            IConvertToActionResult convertToActionResult = result; // ActionResult implicit implements IConvertToActionResult
-            var actionResultWithStatusCode = convertToActionResult.Convert() as IStatusCodeActionResult;
-            Assert.AreEqual(200, actionResultWithStatusCode?.StatusCode);
+            // Assert
+            AssertStatusCode(200, result);
 
-            var okObjectResult = convertToActionResult.Convert() as OkObjectResult;
-            var resultJson = JsonConvert.SerializeObject(okObjectResult?.Value);
+            var resultJson = JsonConvert.SerializeObject(result?.Value);
             var expectedJson = JsonConvert.SerializeObject(expected);
 
             Assert.AreEqual(expectedJson, resultJson);
@@ -76,10 +77,8 @@ namespace PollTest
         [TestMethod]
         public void Test_GetPoll()
         {
-            if (_context == null)
-            {
-                Assert.Fail("Database context null");
-            }
+            Assert.IsNotNull(_context);
+            Assert.IsNotNull(_controller);
 
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
@@ -93,9 +92,9 @@ namespace PollTest
             _context.SaveChanges();
 
 
-            ActionResult<IEnumerable<WebApplication1.API.Poll>> result = _controller.Get("1");
+            var result = _controller.Get("1").Result as ObjectResult;
 
-            WebApplication1.API.Poll expected =  new WebApplication1.API.Poll(
+            WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
                 "1",
                 "Test Poll",
                 new WebApplication1.API.Option[] {
@@ -103,12 +102,9 @@ namespace PollTest
                     new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
                 });
 
-            IConvertToActionResult convertToActionResult = result; // ActionResult implicit implements IConvertToActionResult
-            var actionResultWithStatusCode = convertToActionResult.Convert() as IStatusCodeActionResult;
-            Assert.AreEqual(200, actionResultWithStatusCode?.StatusCode);
+            AssertStatusCode(200, result);
 
-            var okObjectResult = convertToActionResult.Convert() as OkObjectResult;
-            var resultJson = JsonConvert.SerializeObject(okObjectResult?.Value);
+            var resultJson = JsonConvert.SerializeObject(result?.Value);
             var expectedJson = JsonConvert.SerializeObject(expected);
 
             Assert.AreEqual(expectedJson, resultJson);
@@ -116,17 +112,9 @@ namespace PollTest
         [TestMethod]
         public async Task Test_DeletePoll()
         {
-
-            if (_context == null)
-            {
-                Assert.Fail("Database context null");
-            }
-
-            if (_controller == null)
-            {
-                Assert.Fail("_controller is null");
-            }
-
+            Assert.IsNotNull(_context);
+            Assert.IsNotNull(_controller);
+            
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
                "1",
@@ -138,12 +126,9 @@ namespace PollTest
             _context.Add(existingPoll);
             _context.SaveChanges();
 
-            var result = await _controller.Delete("1") as ActionResult<WebApplication1.API.Poll>;
+            var result = (await _controller.Delete("1")).Result;
 
-            IConvertToActionResult convertToActionResult = result; // ActionResult implicit implements IConvertToActionResult
-            var actionResultWithStatusCode = convertToActionResult.Convert() as IStatusCodeActionResult;
-            Assert.AreEqual(204, actionResultWithStatusCode?.StatusCode);
-
+            AssertStatusCode(204, result);
 
             var resultAfterDelete = _context.Polls.SingleOrDefault(p => p.Id == "1");
             Assert.IsNull(resultAfterDelete);
@@ -152,8 +137,10 @@ namespace PollTest
         [TestMethod]
         public async Task Test_CreatePoll()
         {
+            Assert.IsNotNull(_context);
+            Assert.IsNotNull(_controller);
+         
             // Arrange
-
             var toCreate = new WebApplication1.API.Poll(
                "10",
                "Posted Poll",
@@ -162,8 +149,8 @@ namespace PollTest
                 new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
                });
 
-            var result = await _controller.CreatePoll(toCreate) as ActionResult<WebApplication1.API.Poll>;
-            var createdAtResult = result.Result as CreatedAtActionResult;
+            // Act
+            var result = (await _controller.CreatePoll(toCreate)).Result as ObjectResult;
 
             WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
                "10",
@@ -171,13 +158,15 @@ namespace PollTest
                 new WebApplication1.API.Option[] {
                     new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 1 },
                     new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
-                });
+                }
+            );
 
-
-            var resultJson = JsonConvert.SerializeObject(createdAtResult.Value);
+            // Assert
+            var resultJson = JsonConvert.SerializeObject(result?.Value);
             var expectedJson = JsonConvert.SerializeObject(expected);
 
             Assert.AreEqual(expectedJson, resultJson);
+            AssertStatusCode(201, result);
         }
     }
 }
