@@ -34,12 +34,36 @@ namespace WebApplication1.Controllers
         [HttpGet("{pollId}")]
         public ActionResult<IEnumerable<API.Poll>> Get(string pollId)
         {
-            var poll = _context.Polls.FirstOrDefault(p => p.Id == pollId);
+            var poll = _context.Polls.Include(poll => poll.Options).FirstOrDefault(p => p.Id == pollId);
             if (poll == null)
             {
                 return NotFound();
             }
 
+            return Ok(new API.Poll(poll));
+        }
+
+        [HttpPost("{pollId}/{optionId}/vote")]
+        public async Task<ActionResult<API.Poll>> Vote(
+            string pollId,
+            string optionId)
+        {
+            var poll = _context.Polls.Include(poll => poll.Options).FirstOrDefault(p => p.Id == pollId);
+            if (poll == null)
+            {
+                return NotFound();
+            }
+
+            var option = poll.Options.FirstOrDefault(o => o.ID == optionId);
+            if (option == null)
+            {
+                return NotFound();
+            }
+            option.Votes++;
+
+            _context.Update(option);
+            await _context.SaveChangesAsync();
+            
             return Ok(new API.Poll(poll));
         }
 

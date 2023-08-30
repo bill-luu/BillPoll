@@ -114,7 +114,7 @@ namespace PollTest
         {
             Assert.IsNotNull(_context);
             Assert.IsNotNull(_controller);
-            
+
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
                "1",
@@ -139,7 +139,7 @@ namespace PollTest
         {
             Assert.IsNotNull(_context);
             Assert.IsNotNull(_controller);
-         
+
             // Arrange
             var toCreate = new WebApplication1.API.Poll(
                "10",
@@ -152,6 +152,8 @@ namespace PollTest
             // Act
             var result = (await _controller.CreatePoll(toCreate)).Result as ObjectResult;
 
+
+            // Assert
             WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
                "10",
                "Posted Poll",
@@ -160,13 +162,48 @@ namespace PollTest
                     new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
                 }
             );
-
-            // Assert
             var resultJson = JsonConvert.SerializeObject(result?.Value);
             var expectedJson = JsonConvert.SerializeObject(expected);
 
             Assert.AreEqual(expectedJson, resultJson);
             AssertStatusCode(201, result);
+        }
+
+        [TestMethod]
+        public async Task Test_Vote()
+        {
+
+            Assert.IsNotNull(_context);
+            Assert.IsNotNull(_controller);
+
+            //Arrange
+            var existingPoll = new WebApplication1.Models.Poll(
+               "1",
+               "Test Poll",
+               new WebApplication1.Models.Option[] {
+                new WebApplication1.Models.Option { ID = "1", Name = "Option 1", Votes = 1 },
+                new WebApplication1.Models.Option { ID = "2", Name = "Option 2", Votes = 1 }
+               });
+            _context.Add(existingPoll);
+            _context.SaveChanges();
+
+            // Act
+            var result = (await _controller.Vote("1", "1")).Result as ObjectResult;
+
+            //Assert
+            WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
+               "1",
+               "Test Poll",
+                new WebApplication1.API.Option[] {
+                                new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 2 },
+                                new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                }
+            );
+            var resultJson = JsonConvert.SerializeObject(result?.Value);
+            var expectedJson = JsonConvert.SerializeObject(expected);
+
+            Assert.AreEqual(expectedJson, resultJson);
+            AssertStatusCode(200, result);
         }
     }
 }
