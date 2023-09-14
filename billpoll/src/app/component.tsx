@@ -1,7 +1,8 @@
 export default function TestComponent() {
     return (
-        <div>
-       TEST
-        </div>
+        <h1
+            data-test="test-heading">
+       TESaT
+        </h1>
     )
 }
