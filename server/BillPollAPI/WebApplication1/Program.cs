@@ -3,14 +3,22 @@ using System.IO;
 using WebApplication1;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddControllers();
 
-var folder = Environment.SpecialFolder.LocalApplicationData;
-var path = Environment.GetFolderPath(folder);
-var DbPath = System.IO.Path.Join(path, "poll.db");
+// Get the path from command line argument or default to AppData folder
+var DbPath = "";
+if (args.Length > 0 && args[0] == "-dev")
+{
+    var outputDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+    DbPath = System.IO.Path.Join(outputDirectory, "poll.db");
+} 
+else
+{
+    DbPath = System.IO.Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "poll.db");
+}
+
 builder.Services.AddDbContext<PollContext>(
         options => options.UseSqlite($"Data Source={DbPath}")
     );

@@ -24,4 +24,10 @@
     <None Include="C:\Users\billl\Documents\Programming\BillPoll\server\BillPollAPI\WebApplication1\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="poll.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
