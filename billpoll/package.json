@@ -6,21 +6,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "server:dev": "(cd \"../server/BillPollAPI/WebApplication1/\" && dotnet run -dev)",
+    "cy:run": "cypress run",
+    "cy:ci": "start-server-and-test dev \":3000\" cy:run"
   },
   "dependencies": {
     "autoprefixer": "10.4.15",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
     "next": "13.4.19",
+    "npm-run-all": "^4.1.5",
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tailwindcss": "3.3.3"
+    "tailwindcss": "3.3.3",
+    "wait-on": "^7.0.1"
   },
   "devDependencies": {
     "@types/node": "20.6.0",
     "@types/react": "18.2.21",
-    "cypress": "^13.2.0"
+    "cypress": "^13.2.0",
+    "start-server-and-test": "^2.0.1"
   }
 }
