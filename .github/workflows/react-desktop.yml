@@ -50,7 +50,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [16.x]
 
     steps:
     - name: Checkout
@@ -61,5 +61,5 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm server:dev &
-    - run: npm cy:ci
+    - run: npm run server:dev &
+    - run: npm run cy:ci
