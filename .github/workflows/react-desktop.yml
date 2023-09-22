@@ -61,5 +61,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm run server:dev &
-    - run: npm run cy:ci
+    - name: start backend server
+      run: npm run server:dev &
+      working-directory: billpoll/
+    - name: run E2E tests
+      run: npm run cy:ci
+      working-directory: billpoll/
