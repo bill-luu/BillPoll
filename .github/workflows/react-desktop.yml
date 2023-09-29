@@ -72,3 +72,4 @@ jobs:
       working-directory: billpoll/
     - name: run Component tests
       run: npm run cy:run-component
+      working-directory: billpoll/
