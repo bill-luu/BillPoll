@@ -9,6 +9,7 @@
     "lint": "next lint",
     "server:dev": "(cd \"../server/BillPollAPI/WebApplication1/\" && dotnet run -dev)",
     "cy:run": "cypress run",
+    "cy:run-component": "cypress run --component",
     "cy:ci": "start-server-and-test dev \":3000\" cy:run"
   },
   "dependencies": {

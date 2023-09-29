@@ -1,37 +1,27 @@
 describe('template spec', () => {
   before(() => {
-    console.log("BEFORE START")
-    cy
-      .request("POST", "http://localhost:5295/poll", {
-        id: "t1",
+    cleanupPolls();
+
+    cy.request("POST", "http://localhost:5295/poll", {
         name: "Test Poll 1",
         options: [
           {
-            id: "1",
             name: "Option 1",
-            votes: 0,
           },
           {
-            id: "2",
             name: "Option 2",
-            votes: 0,
           },
         ],
       });
 
     cy.request("POST", "http://localhost:5295/poll", {
-      id: "t2",
       name: "Test Poll 2",
       options: [
         {
-          id: "3",
           name: "Option 1",
-          votes: 0,
         },
         {
-          id: "4",
           name: "Option 2",
-          votes: 0,
         },
       ],
     });
@@ -42,8 +32,46 @@ describe('template spec', () => {
     cy.get("[data-test='poll-list']").children().should('have.length', 2)
   });
 
+  it("The Home page should have a button for adding a poll that should allow for adding a new poll", () => {
+    cy.visit("http://localhost:3000");
+    cy.get("[data-test='poll-add-button']").click();
+    cy.get("[poll-add-test='poll-name-input']").type("Poll");
+    cy.get("[poll-add-test='option-add").click();
+    cy.get("[poll-add-test='option-add").click();
+    cy.get("[poll-add-test='option-add").click();
+
+    cy.get("[poll-add-test='option-name-input']")
+      .first()
+      .type("Option 1")
+      .should("have.value", "Option 1")
+      .next("input")
+      .type("Option 2")
+      .should("have.value", "Option 2")
+      .next("input")
+      .type("Option 3")
+      .should("have.value", "Option 3");
+    
+      cy.get("[poll-add-test='submit-poll']").click()
+      cy.get("[data-test='poll-list']").children().should("have.length", 3);
+
+      cy.reload()
+      cy.get("[data-test='poll-list']").children().should("have.length", 3);
+    })
+
   after(() => {
-    cy.request("DELETE", "http://localhost:5295/poll/t1");
-    cy.request("DELETE", "http://localhost:5295/poll/t2");
+    cleanupPolls()
   })
 })
+
+interface Polls {
+  id: number
+}
+function cleanupPolls() {
+    cy.request("http://localhost:5295/poll").then((response) => {
+      let polls = response.body as Array<Polls>;
+      polls.map((poll) => {
+        let url = "http://localhost:5295/poll/" + poll.id;
+        cy.request("DELETE", url);
+      });
+    });
+}

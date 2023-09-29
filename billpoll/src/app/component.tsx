@@ -1,19 +1,20 @@
+
 import React from "react"
+import { GetPolls } from "../remote/poll"
+import PollList from "../components/poll-list"
+import { Poll } from "../interfaces/interfaces"
 
 export default async function PollsComponent() {
+    let polls: Poll[]
+    
+    try {
+        polls = await GetPolls()
+    } catch(error) {
+        console.error("Error fetching polls:", error.message)
+    }
 
-    const res = await fetch("http://localhost:5295/poll", {cache: 'no-store'})
-    const polls = await res.json()
 
     return (
-        <div>
-            {polls?.length > 0 && (
-                <ul data-test="poll-list">
-                    {polls.map(poll => (
-                        <li key={poll.id}> {poll.name} </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+        <PollList></PollList>
     )
 }

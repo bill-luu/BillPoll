@@ -1,16 +1,30 @@
-﻿namespace WebApplication1.Models
+﻿using Microsoft.Extensions.Options;
+using System.Xml.Linq;
+
+namespace WebApplication1.Models
 {
     public class Poll
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<Option> Options { get; set; } = new List<Option>();
 
-        public Poll(string id, string name, Option[] options)
+        public Poll(int id, string name, Option[] options)
         {
             Id = id;
             Name = name;
             Options = options;
+        }
+
+        public Poll(API.PollCreate pollCreateDTO)
+        {
+
+            Name = pollCreateDTO.Name;
+
+            foreach(API.OptionCreate option in pollCreateDTO.Options)
+            {
+                Options.Add(new Option { Name = option.Name });
+            }
         }
 
         public Poll(API.Poll pollDTO)

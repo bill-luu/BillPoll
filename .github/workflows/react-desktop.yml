@@ -70,3 +70,5 @@ jobs:
     - name: run E2E tests
       run: npm run cy:ci
       working-directory: billpoll/
+    - name: run Component tests
+      run: npm run cy:run-component

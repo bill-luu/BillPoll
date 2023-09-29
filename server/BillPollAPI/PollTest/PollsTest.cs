@@ -45,11 +45,11 @@ namespace PollTest
 
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
-               "1",
+               1,
                "Test Poll",
                new WebApplication1.Models.Option[] {
-                new WebApplication1.Models.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                new WebApplication1.Models.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                new WebApplication1.Models.Option { Id = 1, Name = "Option 1", Votes = 1 },
+                new WebApplication1.Models.Option { Id = 2, Name = "Option 2", Votes = 1 }
                });
             _context.Add(existingPoll);
             _context.SaveChanges();
@@ -58,11 +58,11 @@ namespace PollTest
             var result = _controller.Get().Result as ObjectResult;
 
             WebApplication1.API.Poll[] expected = { new WebApplication1.API.Poll(
-                "1",
+                1,
                 "Test Poll",
                 new WebApplication1.API.Option[] {
-                    new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                    new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                    new WebApplication1.API.Option { ID = 1, Name = "Option 1", Votes = 1 },
+                    new WebApplication1.API.Option { ID = 2, Name = "Option 2", Votes = 1 }
                 })
             };
 
@@ -82,24 +82,24 @@ namespace PollTest
 
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
-               "1",
+               1,
                "Test Poll",
                new WebApplication1.Models.Option[] {
-                new WebApplication1.Models.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                new WebApplication1.Models.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                new WebApplication1.Models.Option { Id = 1, Name = "Option 1", Votes = 1 },
+                new WebApplication1.Models.Option { Id = 2, Name = "Option 2", Votes = 1 }
                });
             _context.Add(existingPoll);
             _context.SaveChanges();
 
 
-            var result = _controller.Get("1").Result as ObjectResult;
+            var result = _controller.Get(1).Result as ObjectResult;
 
             WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
-                "1",
+                1,
                 "Test Poll",
                 new WebApplication1.API.Option[] {
-                    new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                    new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                    new WebApplication1.API.Option { ID = 1, Name = "Option 1", Votes = 1 },
+                    new WebApplication1.API.Option { ID = 2, Name = "Option 2", Votes = 1 }
                 });
 
             AssertStatusCode(200, result);
@@ -117,20 +117,20 @@ namespace PollTest
 
             // Arrange
             var existingPoll = new WebApplication1.Models.Poll(
-               "1",
+               1,
                "Test Poll",
                new WebApplication1.Models.Option[] {
-                new WebApplication1.Models.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                new WebApplication1.Models.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                new WebApplication1.Models.Option { Id = 1, Name = "Option 1", Votes = 1 },
+                new WebApplication1.Models.Option { Id = 2, Name = "Option 2", Votes = 1 }
                });
             _context.Add(existingPoll);
             _context.SaveChanges();
 
-            var result = (await _controller.Delete("1")).Result;
+            var result = (await _controller.Delete(1)).Result;
 
             AssertStatusCode(204, result);
 
-            var resultAfterDelete = _context.Polls.SingleOrDefault(p => p.Id == "1");
+            var resultAfterDelete = _context.Polls.SingleOrDefault(p => p.Id == 1);
             Assert.IsNull(resultAfterDelete);
         }
 
@@ -141,12 +141,11 @@ namespace PollTest
             Assert.IsNotNull(_controller);
 
             // Arrange
-            var toCreate = new WebApplication1.API.Poll(
-               "10",
+            var toCreate = new WebApplication1.API.PollCreate(
                "Posted Poll",
-               new WebApplication1.API.Option[] {
-                new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+               new WebApplication1.API.OptionCreate[] {
+                new WebApplication1.API.OptionCreate { Name = "Option 1" },
+                new WebApplication1.API.OptionCreate { Name = "Option 2" }
                });
 
             // Act
@@ -155,11 +154,11 @@ namespace PollTest
 
             // Assert
             WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
-               "10",
+               1,
                "Posted Poll",
                 new WebApplication1.API.Option[] {
-                    new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                    new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                    new WebApplication1.API.Option { ID = 1, Name = "Option 1" },
+                    new WebApplication1.API.Option { ID = 2, Name = "Option 2" }
                 }
             );
             var resultJson = JsonConvert.SerializeObject(result?.Value);
@@ -178,25 +177,25 @@ namespace PollTest
 
             //Arrange
             var existingPoll = new WebApplication1.Models.Poll(
-               "1",
+               1,
                "Test Poll",
                new WebApplication1.Models.Option[] {
-                new WebApplication1.Models.Option { ID = "1", Name = "Option 1", Votes = 1 },
-                new WebApplication1.Models.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                new WebApplication1.Models.Option { Id = 1, Name = "Option 1", Votes = 1 },
+                new WebApplication1.Models.Option { Id = 2, Name = "Option 2", Votes = 1 }
                });
             _context.Add(existingPoll);
             _context.SaveChanges();
 
             // Act
-            var result = (await _controller.Vote("1", "1")).Result as ObjectResult;
+            var result = (await _controller.Vote(1, 1)).Result as ObjectResult;
 
             //Assert
             WebApplication1.API.Poll expected = new WebApplication1.API.Poll(
-               "1",
+               1,
                "Test Poll",
                 new WebApplication1.API.Option[] {
-                                new WebApplication1.API.Option { ID = "1", Name = "Option 1", Votes = 2 },
-                                new WebApplication1.API.Option { ID = "2", Name = "Option 2", Votes = 1 }
+                                new WebApplication1.API.Option { ID = 1, Name = "Option 1", Votes = 2 },
+                                new WebApplication1.API.Option { ID = 2, Name = "Option 2", Votes = 1 }
                 }
             );
             var resultJson = JsonConvert.SerializeObject(result?.Value);

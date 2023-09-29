@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet("{pollId}")]
-        public ActionResult<IEnumerable<API.Poll>> Get(string pollId)
+        public ActionResult<IEnumerable<API.Poll>> Get(int pollId)
         {
             var poll = _context.Polls.Include(poll => poll.Options).FirstOrDefault(p => p.Id == pollId);
             if (poll == null)
@@ -45,8 +45,8 @@ namespace WebApplication1.Controllers
 
         [HttpPost("{pollId}/{optionId}/vote")]
         public async Task<ActionResult<API.Poll>> Vote(
-            string pollId,
-            string optionId)
+            int pollId,
+            int optionId)
         {
             var poll = _context.Polls.Include(poll => poll.Options).FirstOrDefault(p => p.Id == pollId);
             if (poll == null)
@@ -54,7 +54,7 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var option = poll.Options.FirstOrDefault(o => o.ID == optionId);
+            var option = poll.Options.FirstOrDefault(o => o.Id == optionId);
             if (option == null)
             {
                 return NotFound();
@@ -68,7 +68,21 @@ namespace WebApplication1.Controllers
         }
 
         [HttpDelete("{pollId}")]
-        public async Task <ActionResult<API.Poll>> Delete(string pollId)
+        public async Task <ActionResult<API.Poll>> Delete(int pollId)
+        {
+            var poll = _context.Polls.FirstOrDefault(p => p.Id == pollId);
+            if (poll == null)
+            {
+                return NotFound();
+            }
+
+            _context.Polls.Remove(poll);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{pollId}/{optionId}")]
+        public async Task<ActionResult<API.Poll>> DeleteOption(int pollId)
         {
             var poll = _context.Polls.FirstOrDefault(p => p.Id == pollId);
             if (poll == null)
@@ -82,13 +96,13 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost(Name = "Create New Poll")]
-        public async Task<ActionResult<API.Poll>> CreatePoll(API.Poll poll)
+        public async Task<ActionResult<API.Poll>> CreatePoll(API.PollCreate poll)
         {
             Models.Poll polltoCreate = new Models.Poll(poll);
             _context.Add(polltoCreate);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(CreatePoll), new { id = poll.Id }, poll);
+            return CreatedAtAction(nameof(CreatePoll), new { id = polltoCreate.Id }, new API.Poll(polltoCreate));
         }
     }
 }

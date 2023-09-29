@@ -2,7 +2,7 @@
 {
     public class Poll
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<Option> Options { get; set; } = new List<Option>();
 
@@ -17,7 +17,7 @@
 
         }
 
-        public Poll(string id, string name, ICollection<Option> options)
+        public Poll(int id, string name, ICollection<Option> options)
         {
             Id = id;
             Name = name;
@@ -26,4 +26,16 @@
         public Poll() { }
     }
 
+    public class PollCreate
+    {
+        public string Name { get; set; }
+        public ICollection<OptionCreate> Options { get; set; } = new List<OptionCreate>();
+
+        public PollCreate(string name, ICollection<OptionCreate> options)
+        {
+            Name = name;
+            Options = options;
+        }
+        public PollCreate() { }
+    }
 }
